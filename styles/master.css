@@ -1,0 +1,18 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+html,
+body,
+#__next {
+  height: 100%;
+}
+
+body {
+  background: #FFDE8D;
+  overflow: hidden
+}
