@@ -1,8 +1,4 @@
 .next
-node_modules
+.now
 
-# yarn
-.yarn/*
-!.yarn/releases
-!.yarn/plugins
-.pnp.*
+node_modules
