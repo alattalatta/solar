@@ -1,0 +1,14 @@
+.button {
+  width: calc(13 * var(--wu));
+  height: calc(13 * var(--wu));
+  border: none;
+  border-radius: 50%;
+  box-shadow:
+    inset 0 0 calc(var(--wu) * 1.5) #ffd160,
+    calc(var(--wu) * 0.5) calc(var(--wu) * -0.5) var(--wu) #ffd63f,
+    calc(var(--wu) * -0.5) calc(var(--wu) * 0.5) var(--wu) #f1aa51;
+  padding: calc(0.5 * var(--wu));
+}
+.button:focus {
+  outline: none;
+}

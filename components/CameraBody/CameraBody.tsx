@@ -7,6 +7,7 @@ import React, { useContext, useState } from 'react'
 
 import PicView from '../PicView'
 import ViewFinder from '../ViewFinder'
+import ShutterButton from './ShutterButton'
 import styles from './styles.module.css'
 
 const CameraBody: React.FC = () => {
@@ -39,12 +40,11 @@ const CameraBody: React.FC = () => {
     <main className={styles.widthContainer}>
       <div className={styles.shadow} />
       <div className={styles.heightContainer}>
+        <div className={styles.upperPaint} />
         <div className={styles.wrap}>
           <ViewFinder className={styles.viewFinder} />
           <div className={styles.sep} />
-          <button className={styles.button} onClick={takePicture()}>
-            <div className={styles.buttonIn} />
-          </button>
+          <ShutterButton className={styles.button} onClick={takePicture()} />
         </div>
       </div>
       {pipe(
