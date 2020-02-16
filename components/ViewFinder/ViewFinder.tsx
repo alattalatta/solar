@@ -1,4 +1,5 @@
 import { MediaAPIsCtx, MediaAPIsObject } from '@/contexts/mediaAPIs'
+import { useIOState } from '@/hooks/useIOState'
 
 import clsx from 'clsx'
 import { option } from 'fp-ts'
@@ -14,6 +15,8 @@ type ViewFinderProps = {
 
 const ViewFinder: React.FC<ViewFinderProps> = ({ className }) => {
   const mediaAPIsO = useContext(MediaAPIsCtx)
+
+  const [zoomed, setZoomed] = useIOState(false)
 
   const $video = useRef<HTMLVideoElement>(null)
 
@@ -34,11 +37,23 @@ const ViewFinder: React.FC<ViewFinderProps> = ({ className }) => {
   }, [mediaAPIsO])
 
   return (
-    <div className={clsx(styles.container, className)}>
+    <div
+      className={clsx(
+        zoomed ? styles.containerZoomed : styles.container,
+        className,
+      )}
+      onClick={setZoomed(!zoomed)}
+    >
       {pipe(
         mediaAPIsO,
         option.fold(constNull, () => (
-          <video ref={$video} className={styles.lens} autoPlay />
+          <video
+            ref={$video}
+            className={styles.lens}
+            autoPlay
+            muted
+            playsInline
+          />
         )),
       )}
     </div>

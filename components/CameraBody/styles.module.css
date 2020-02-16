@@ -7,10 +7,16 @@
   height: 0;
   margin: auto;
   position: absolute;
+  /* [todo] proper easing */
+  transition: transform 750ms ease;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
+}
+.widthContainerPrinting {
+  composes: widthContainer;
+  transform: translateX(75%);
 }
 
 .shadow,
@@ -49,9 +55,6 @@
 }
 
 .heightContainer {
-  background: #ffba44;
-  border-radius: calc(7 * var(--wu));
-  box-shadow: inset calc(var(--wu) * 0.5) calc(var(--wu) * -1) var(--wu) #eb9617;
   padding-top: 60%;
   position: absolute;
   top: 0;
@@ -59,6 +62,20 @@
   bottom: 0;
   left: 0;
   transform: translateY(-50%);
+}
+
+.body {
+  background: #ffba44;
+  border-radius: calc(7 * var(--wu));
+  box-shadow:
+    inset calc(var(--wu) * 0.5) calc(var(--wu) * -1) var(--wu) #eb9617,
+    inset calc(var(--wu) * -0.5) calc(var(--wu) * -1) var(--wu) #eb9617;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
 }
 
 .upperPaint {
@@ -75,7 +92,6 @@
 .wrap {
   width: calc(100% - 2 * var(--wu));
   height: calc(100% - 2 * var(--wu));
-  border: calc(0.275 * var(--wu)) solid #eb9617;
   border-radius: calc(6 * var(--wu));
   margin: auto;
   position: absolute;

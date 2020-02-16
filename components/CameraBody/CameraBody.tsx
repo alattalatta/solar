@@ -1,9 +1,10 @@
 import { MediaAPIsCtx } from '@/contexts/mediaAPIs'
+import { useIOState } from '@/hooks/useIOState'
 
-import { taskEither, option, io, task } from 'fp-ts'
+import { taskEither, option, task } from 'fp-ts'
 import { constVoid, constNull } from 'fp-ts/es6/function'
 import { pipe } from 'fp-ts/es6/pipeable'
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 
 import PicView from '../PicView'
 import ViewFinder from '../ViewFinder'
@@ -13,9 +14,7 @@ import styles from './styles.module.css'
 const CameraBody: React.FC = () => {
   const mediaAPIsO = useContext(MediaAPIsCtx)
 
-  const [blobO, setBlobO] = useState<option.Option<Blob>>(option.none)
-
-  const setBlob = (val: option.Option<Blob>): io.IO<void> => () => setBlobO(val)
+  const [blobO, setBlobO] = useIOState<option.Option<Blob>>(option.none)
 
   const takePicture = (): task.Task<null> =>
     pipe(
@@ -29,7 +28,7 @@ const CameraBody: React.FC = () => {
           }),
         ),
       ),
-      taskEither.chain(blob => taskEither.rightIO(setBlob(option.some(blob)))),
+      taskEither.chain(blob => taskEither.rightIO(setBlobO(option.some(blob)))),
       taskEither.fold(
         () => task.of(null),
         () => task.of(null),
@@ -37,22 +36,32 @@ const CameraBody: React.FC = () => {
     )
 
   return (
-    <main className={styles.widthContainer}>
+    <main
+      className={pipe(
+        blobO,
+        option.fold(
+          () => styles.widthContainer,
+          () => styles.widthContainerPrinting,
+        ),
+      )}
+    >
       <div className={styles.shadow} />
       <div className={styles.heightContainer}>
-        <div className={styles.upperPaint} />
-        <div className={styles.wrap}>
-          <ViewFinder className={styles.viewFinder} />
-          <div className={styles.sep} />
-          <ShutterButton className={styles.button} onClick={takePicture()} />
+        <div className={styles.body}>
+          <div className={styles.upperPaint} />
+          <div className={styles.wrap}>
+            <ViewFinder className={styles.viewFinder} />
+            <div className={styles.sep} />
+            <ShutterButton className={styles.button} onClick={takePicture()} />
+          </div>
         </div>
+        {pipe(
+          blobO,
+          option.fold(constNull, blob => (
+            <PicView blob={blob} onClick={setBlobO(option.none)} />
+          )),
+        )}
       </div>
-      {pipe(
-        blobO,
-        option.fold(constNull, blob => (
-          <PicView blob={blob} onClick={setBlob(option.none)} />
-        )),
-      )}
     </main>
   )
 }

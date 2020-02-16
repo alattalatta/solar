@@ -1,5 +1,5 @@
 import { io } from 'fp-ts'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { parseEXIF } from './parseEXIF'
 import styles from './styles.module.css'
@@ -10,16 +10,22 @@ type PicViewProps = {
 }
 
 const PicView: React.FC<PicViewProps> = ({ blob, onClick }) => {
+  const [mounted, setMounted] = useState(false)
+
   const src = URL.createObjectURL(blob)
 
   useEffect(() => {
     parseEXIF(blob)
+    setTimeout(() => {
+      setMounted(true)
+    })
+
     return () => URL.revokeObjectURL(src)
   }, [blob])
 
   return (
     <img
-      className={styles.container}
+      className={mounted ? styles.containerPrinting : styles.container}
       src={src}
       alt="Preview of the last photo"
       onClick={onClick}

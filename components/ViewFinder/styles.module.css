@@ -5,6 +5,14 @@
   border-radius: calc(0.8 * var(--wu));
   overflow: hidden;
   padding: calc(0.75 * var(--wu));
+  position: relative;
+  /* [todo] proper transition */
+  transition: transform 200ms ease;
+  z-index: 1;
+}
+.containerZoomed {
+  composes: container;
+  transform: translateY(100%) scale(3);
 }
 
 .lens {
@@ -13,4 +21,6 @@
   border-radius: calc(1.2 * var(--wu));
   display: block;
   object-fit: cover;
+  position: relative;
+  z-index: 1;
 }

@@ -1,6 +1,7 @@
 .button {
   width: calc(13 * var(--wu));
   height: calc(13 * var(--wu));
+  background: #fff;
   border: none;
   border-radius: 50%;
   box-shadow:
