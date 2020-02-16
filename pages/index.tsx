@@ -34,11 +34,20 @@ function makeMediaAPIsObject(
     array.head(mediaStream.getVideoTracks()),
     option.fold(
       () => taskEither.left('No back-facing camera found on your device'),
-      track =>
-        taskEither.right({
-          imageCapture: new ImageCapture(track),
-          mediaStream,
-        }),
+      track => {
+        const imageCapture = new ImageCapture(track)
+        return pipe(
+          taskEither.rightTask(() => imageCapture.getPhotoCapabilities()),
+          taskEither.map(capabilities => ({
+            capabilities: {
+              width: capabilities.imageWidth.max,
+              height: capabilities.imageHeight.max,
+            },
+            imageCapture,
+            mediaStream,
+          })),
+        )
+      },
     ),
   )
 }

@@ -19,10 +19,14 @@ const CameraBody: React.FC = () => {
   const takePicture = (): task.Task<null> =>
     pipe(
       mediaAPIsO,
-      option.map(mediaAPIs => mediaAPIs.imageCapture),
       taskEither.fromOption(constVoid),
-      taskEither.chain(imageCapture =>
-        taskEither.rightTask(() => imageCapture.takePhoto()),
+      taskEither.chain(({ capabilities, imageCapture }) =>
+        taskEither.rightTask(() =>
+          imageCapture.takePhoto({
+            imageWidth: capabilities.width,
+            imageHeight: capabilities.height,
+          }),
+        ),
       ),
       taskEither.chain(blob => taskEither.rightIO(setBlob(option.some(blob)))),
       taskEither.fold(

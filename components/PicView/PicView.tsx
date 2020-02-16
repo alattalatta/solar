@@ -1,6 +1,7 @@
 import { io } from 'fp-ts'
-import React from 'react'
+import React, { useEffect } from 'react'
 
+import { parseEXIF } from './parseEXIF'
 import styles from './styles.module.css'
 
 type PicViewProps = {
@@ -10,6 +11,11 @@ type PicViewProps = {
 
 const PicView: React.FC<PicViewProps> = ({ blob, onClick }) => {
   const src = URL.createObjectURL(blob)
+
+  useEffect(() => {
+    parseEXIF(blob)
+    return () => URL.revokeObjectURL(src)
+  }, [blob])
 
   return (
     <img
