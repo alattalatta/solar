@@ -1,11 +1,11 @@
 import CameraBody from '@/components/CameraBody'
 import { MediaAPIsCtx, MediaAPIsObject } from '@/contexts/mediaAPIs'
-import { useTaskEffect } from '@/hooks/useTaskEffect'
+import { useMonad1Effect } from '@/hooks/useMonad1Effect'
 
 import { array, io, option, taskEither, task } from 'fp-ts'
 import { pipe } from 'fp-ts/es6/pipeable'
 import { NextPage } from 'next'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 function alert(message: string): io.IO<void> {
   return () => window.alert(message)
@@ -56,8 +56,10 @@ const Index: NextPage = () => {
   const [mediaAPIsO, setMediaAPIsO] = useState<option.Option<MediaAPIsObject>>(
     option.none,
   )
+  const [coords, setCoords] = useState<option.Option<Coordinates>>(option.none)
+  coords
 
-  useTaskEffect(
+  useMonad1Effect(
     pipe(
       getUserMedia(),
       taskEither.chain(makeMediaAPIsObject),
@@ -68,6 +70,16 @@ const Index: NextPage = () => {
       ),
     ),
   )
+
+  // [todo] user pref
+  useEffect(() => {
+    const id = navigator.geolocation.watchPosition(
+      pos => setCoords(option.some(pos.coords)),
+      console.error,
+    )
+
+    return () => navigator.geolocation.clearWatch(id)
+  }, [])
 
   return (
     <MediaAPIsCtx.Provider value={mediaAPIsO}>

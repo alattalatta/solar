@@ -11,6 +11,10 @@ const App: NextPage<AppProps> = ({ Component, pageProps }) => {
       <Head>
         <title>S O L A R</title>
         <link rel="manifest" href="/manifest.json" />
+        <meta
+          name="viewport"
+          content="initial-scale=1, maximum-scale=1, width=device-width, shrink-to-fit=no, user-scalable=no"
+        />
       </Head>
       <Component {...pageProps} />
     </>
