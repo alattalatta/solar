@@ -4,7 +4,7 @@ import { useIOState } from '@/hooks/useIOState'
 import { taskEither, option, task } from 'fp-ts'
 import { constVoid, constNull } from 'fp-ts/es6/function'
 import { pipe } from 'fp-ts/es6/pipeable'
-import React, { useContext } from 'react'
+import React, { useContext, memo } from 'react'
 
 import PicView from '../PicView'
 import ViewFinder from '../ViewFinder'
@@ -66,4 +66,4 @@ const CameraBody: React.FC = () => {
   )
 }
 
-export default CameraBody
+export default memo(CameraBody)
