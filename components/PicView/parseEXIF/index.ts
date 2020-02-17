@@ -10,7 +10,7 @@ export async function parseEXIF(blob: Blob): Promise<void> {
 
   let offset = 2
 
-  // ensure APP01 marker
+  // ensure APP1 marker
   const marker = view.getUint16(offset)
   if (marker !== 0xffe1) {
     return

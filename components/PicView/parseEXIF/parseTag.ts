@@ -50,13 +50,13 @@ export function parseTag(
   view: DataView,
   start: number,
   little: boolean,
-  metadataSet: Record<string, string>,
+  tagMap: Record<string, string>,
 ): EXIFTagData {
   let offset = start
   let value: string | number | number[]
 
   const type = view.getUint16(offset, little)
-  const label = metadataSet[type]
+  const label = tagMap[type]
   offset += 2
 
   const format = view.getUint16(offset, little)
@@ -96,9 +96,14 @@ export function parseTag(
     value =
       format === 2 // ASCII
         ? readStringData(view, offset, dataLength)
-        : view.getUint8(offset)
+        : dataLength === 1
+        ? view.getUint8(offset)
+        : readDataSet(view, offset, 1, dataLength, little)
   } else if (byteUnit === 2) {
-    value = view.getUint16(offset, little)
+    value =
+      dataLength === 1
+        ? view.getUint16(offset, little)
+        : readDataSet(view, offset, 2, dataLength, little)
   } else {
     value = readUnknownSignQuadBytes(
       view,
