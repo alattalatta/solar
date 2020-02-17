@@ -1,6 +1,7 @@
-import { parseIFDs } from './parseIFDs'
+import { encodeEXIF } from '../encoder'
+import { decodeIFDs } from './decodeIFDs'
 
-export async function parseEXIF(blob: Blob): Promise<void> {
+export async function decodeEXIF(blob: Blob): Promise<void> {
   const buffer = (await (blob as any).arrayBuffer()) as ArrayBuffer
   const view = new DataView(buffer)
   if (view.getUint16(0) !== 0xffd8) {
@@ -13,13 +14,35 @@ export async function parseEXIF(blob: Blob): Promise<void> {
   // ensure APP1 marker
   const marker = view.getUint16(offset)
   if (marker !== 0xffe1) {
+    console.log('The first marker is not of APP1, 0xffe1. Aborting...')
     return
   }
 
   // length of the APP1
   offset += 2
   const app1Length = view.getUint16(offset)
-  console.log('APP1 length', app1Length, app1Length.toString(16))
+  console.log(
+    `APP1 area: 0x${offset.toString(16)} ~ 0x${(offset + app1Length).toString(
+      16,
+    )}`,
+  )
+  ;((blob.slice(0, offset + app1Length) as any).arrayBuffer() as Promise<
+    ArrayBuffer
+  >)
+    .then(buf => new Uint8Array(buf))
+    .then(arr =>
+      arr
+        .reduce<string[]>((acc, cur) => {
+          acc.push(cur.toString(16).padStart(2, '0'))
+          return acc
+        }, [])
+        .join(' '),
+    )
+    .then(dmp => {
+      console.groupCollapsed('APP1 dump')
+      console.log(dmp)
+      console.groupEnd()
+    })
 
   // EXIF header
   offset += 2
@@ -38,6 +61,9 @@ export async function parseEXIF(blob: Blob): Promise<void> {
 
   // offset to the first IFD
   offset += view.getUint32(offset + 4, little)
+  console.log('offset', offset, 'total length', app1Length)
 
-  console.log(parseIFDs(view, offset, little))
+  const parsedIFDs = decodeIFDs(view, offset, little)
+  console.log(parsedIFDs)
+  encodeEXIF(parsedIFDs)
 }

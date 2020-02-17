@@ -1,7 +1,7 @@
 import { io } from 'fp-ts'
 import React, { useEffect, useState, useCallback, memo } from 'react'
 
-import { parseEXIF } from './parseEXIF'
+import { decodeEXIF } from './exif/decoder'
 import styles from './styles.module.css'
 
 type PicViewProps = {
@@ -53,7 +53,7 @@ const PicView: React.FC<PicViewProps> = ({ blob, onClick }) => {
     : 'translate3d(0, 0, 0)'
 
   useEffect(() => {
-    parseEXIF(blob)
+    decodeEXIF(blob)
     setSrc(URL.createObjectURL(blob))
     setTimeout(() => {
       setMounted(true)

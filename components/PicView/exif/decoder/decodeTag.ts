@@ -1,3 +1,6 @@
+import { dataFormatByteMap } from '../common/maps'
+import { EXIFTagData, DataFormats } from '../common/types'
+import { TIFF_HEADER_START } from './constants'
 import {
   readStringData,
   readDataSet,
@@ -5,48 +8,7 @@ import {
   readUnknownSignQuadBytes,
 } from './readData'
 
-export type EXIFTagData = {
-  format: DateFormats
-  label: string
-  length: number
-  type: number
-  value: string | number | number[]
-}
-
-type DateFormats =
-  | 'UByte'
-  | 'ASCII'
-  | 'UShort'
-  | 'ULong'
-  | 'URational'
-  | 'Undefined'
-  | 'Long'
-  | 'Rational'
-
-const dateFormatMap: Record<string, DateFormats> = Object.freeze({
-  1: 'UByte',
-  2: 'ASCII',
-  3: 'UShort',
-  4: 'ULong',
-  5: 'URational',
-  7: 'Undefined',
-  9: 'Long',
-  10: 'Rational',
-})
-const dateFormatBytes: Record<DateFormats, 1 | 2 | 4 | 8> = Object.freeze({
-  UByte: 1,
-  ASCII: 1,
-  UShort: 2,
-  ULong: 4,
-  URational: 8,
-  Undefined: 1,
-  Long: 4,
-  Rational: 8,
-})
-
-const TIFF_HEADER_START = 12
-
-export function parseTag(
+export function decodeTag(
   view: DataView,
   start: number,
   little: boolean,
@@ -59,14 +21,13 @@ export function parseTag(
   const label = tagMap[type]
   offset += 2
 
-  const format = view.getUint16(offset, little)
-  const formatLabel = dateFormatMap[format] || 'Undefined'
+  const format = view.getUint16(offset, little) as DataFormats
   offset += 2
 
   const dataLength = view.getUint32(offset, little)
   offset += 4
 
-  const byteUnit = dateFormatBytes[formatLabel]
+  const byteUnit = dataFormatByteMap[format]
   if (byteUnit * dataLength > 4) {
     const dataOffset = view.getUint32(offset, little) + TIFF_HEADER_START
 
@@ -114,7 +75,7 @@ export function parseTag(
   }
 
   return {
-    format: formatLabel,
+    format,
     label,
     length: dataLength,
     type,
