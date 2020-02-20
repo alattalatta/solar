@@ -18,7 +18,7 @@ export const exifMap: Record<string, string> = Object.freeze({
 
   0x8298: 'Copyright',
   0x8769: 'Sub-EXIF offset',
-  0x829a: 'Exposure',
+  0x829a: 'ExposureTime',
   0x829d: 'F',
   0x8822: 'ExposureProgram',
   0x8825: 'GPS',

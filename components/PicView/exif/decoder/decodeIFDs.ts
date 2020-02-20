@@ -10,20 +10,21 @@ export function decodeIFDs(
   little: boolean,
   decoded: DecodedIFDStruct = {
     primary: [],
-    sub: [],
-    interop: [],
-    gps: [],
   },
   target: keyof DecodedIFDStruct = 'primary',
   tagMap: Record<string, string> = exifMap,
 ): DecodedIFDStruct {
+  if (!decoded[target]) {
+    decoded[target] = []
+  }
+
   const tagCount = view.getUint16(offset, little)
   if (tagCount === 0) {
     console.log('no tags counted')
     return decoded
   }
 
-  const tags = decoded[target]
+  const tags = decoded[target]!
 
   console.log(`${tagCount} tags counted`)
   offset += 2

@@ -11,14 +11,15 @@ export type DataFormats =
 export type EXIFTagData = {
   format: DataFormats
   label: string
-  length: number
+  byteLength: number
+  byteSize: number
   type: number
   value: string | number | number[]
 }
 
 export type DecodedIFDStruct = {
   primary: EXIFTagData[]
-  sub: EXIFTagData[]
-  interop: EXIFTagData[]
-  gps: EXIFTagData[]
+  sub?: EXIFTagData[]
+  interop?: EXIFTagData[]
+  gps?: EXIFTagData[]
 }

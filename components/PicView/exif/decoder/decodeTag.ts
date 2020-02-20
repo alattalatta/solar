@@ -24,22 +24,22 @@ export function decodeTag(
   const format = view.getUint16(offset, little) as DataFormats
   offset += 2
 
-  const dataLength = view.getUint32(offset, little)
+  const byteLength = view.getUint32(offset, little)
   offset += 4
 
   const byteUnit = dataFormatByteMap[format]
-  if (byteUnit * dataLength > 4) {
+  if (byteUnit * byteLength > 4) {
     const dataOffset = view.getUint32(offset, little) + TIFF_HEADER_START
 
     if (format === 2) {
       // ASCII
-      value = readStringData(view, dataOffset, dataLength)
+      value = readStringData(view, dataOffset, byteLength)
     } else if (format === 5 || format === 10) {
       // URational || Rational
       value = readRationalDataSet(
         view,
         dataOffset,
-        dataLength,
+        byteLength,
         little,
         format === 10, // Rational
       )
@@ -48,7 +48,7 @@ export function decodeTag(
         view,
         dataOffset,
         byteUnit as 1 | 2 | 4,
-        dataLength,
+        byteLength,
         little,
         format === 9, // Long
       )
@@ -56,15 +56,15 @@ export function decodeTag(
   } else if (byteUnit === 1) {
     value =
       format === 2 // ASCII
-        ? readStringData(view, offset, dataLength)
-        : dataLength === 1
+        ? readStringData(view, offset, byteLength)
+        : byteLength === 1
         ? view.getUint8(offset)
-        : readDataSet(view, offset, 1, dataLength, little)
+        : readDataSet(view, offset, 1, byteLength, little)
   } else if (byteUnit === 2) {
     value =
-      dataLength === 1
+      byteLength === 1
         ? view.getUint16(offset, little)
-        : readDataSet(view, offset, 2, dataLength, little)
+        : readDataSet(view, offset, 2, byteLength, little)
   } else {
     value = readUnknownSignQuadBytes(
       view,
@@ -75,9 +75,10 @@ export function decodeTag(
   }
 
   return {
+    byteLength,
+    byteSize: byteUnit * byteLength,
     format,
     label,
-    length: dataLength,
     type,
     value,
   }
