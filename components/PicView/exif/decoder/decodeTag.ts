@@ -1,11 +1,11 @@
 import { dataFormatByteMap } from '../common/maps'
-import { EXIFTagData, DataFormats } from '../common/types'
+import { EXIFTagData, DataFormat } from '../common/types'
 import { TIFF_HEADER_START } from './constants'
 import {
   readStringData,
   readDataSet,
   readRationalDataSet,
-  readUnknownSignQuadBytes,
+  readQuadBytes,
 } from './readData'
 
 export function decodeTag(
@@ -15,13 +15,13 @@ export function decodeTag(
   tagMap: Record<string, string>,
 ): EXIFTagData {
   let offset = start
-  let value: string | number | number[]
+  let value: string | number | number[] | [number, number] | [number, number][]
 
   const type = view.getUint16(offset, little)
   const label = tagMap[type]
   offset += 2
 
-  const format = view.getUint16(offset, little) as DataFormats
+  const format = view.getUint16(offset, little) as DataFormat
   offset += 2
 
   const byteLength = view.getUint32(offset, little)
@@ -66,7 +66,7 @@ export function decodeTag(
         ? view.getUint16(offset, little)
         : readDataSet(view, offset, 2, byteLength, little)
   } else {
-    value = readUnknownSignQuadBytes(
+    value = readQuadBytes(
       view,
       offset,
       little,

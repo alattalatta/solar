@@ -65,5 +65,7 @@ export async function decodeEXIF(blob: Blob): Promise<void> {
 
   const parsedIFDs = decodeIFDs(view, offset, little)
   console.log(parsedIFDs)
-  encodeEXIF(parsedIFDs)
+
+  const header = buffer.slice(0, 20)
+  encodeEXIF(header, parsedIFDs)
 }

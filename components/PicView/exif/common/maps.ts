@@ -1,7 +1,7 @@
-import { DataFormats } from './types'
+import { DataFormat } from './types'
 
 export const dataFormatByteMap: Record<
-  DataFormats,
+  DataFormat,
   1 | 2 | 4 | 8
 > = Object.freeze({
   1: 1,

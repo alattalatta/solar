@@ -1,4 +1,4 @@
-export type DataFormats =
+export type DataFormat =
   | 1 // UByte
   | 2 // ASCII
   | 3 // UShort
@@ -9,12 +9,12 @@ export type DataFormats =
   | 10 // Rational
 
 export type EXIFTagData = {
-  format: DataFormats
+  format: DataFormat
   label: string
   byteLength: number
   byteSize: number
   type: number
-  value: string | number | number[]
+  value: string | number | number[] | [number, number] | [number, number][]
 }
 
 export type DecodedIFDStruct = {

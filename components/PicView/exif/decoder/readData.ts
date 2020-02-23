@@ -15,32 +15,22 @@ export function readStringData(
   return buffer.join('')
 }
 
-const readUnsignedBytes = (unit: 1 | 2) => (
-  view: DataView,
-  dataOffset: number,
-  little?: boolean,
-  signed?: boolean,
-): number => {
-  if (unit === 1) {
-    return view.getUint8(dataOffset)
-  }
-  if (unit === 2) {
-    return view.getUint16(dataOffset, little)
-  }
-  return signed
-    ? view.getInt32(dataOffset, little)
-    : view.getUint32(dataOffset, little)
-}
+const readSingleByte = (view: DataView, offset: number): number =>
+  view.getUint8(offset)
 
-export const readUnknownSignQuadBytes = (
+const readDoubleBytes = (
   view: DataView,
-  dataOffset: number,
+  offset: number,
+  little?: boolean,
+): number => view.getUint16(offset, little)
+
+export const readQuadBytes = (
+  view: DataView,
+  offset: number,
   little?: boolean,
   signed?: boolean,
 ): number => {
-  return signed
-    ? view.getInt32(dataOffset, little)
-    : view.getUint32(dataOffset, little)
+  return signed ? view.getInt32(offset, little) : view.getUint32(offset, little)
 }
 
 function readRationalData(
@@ -48,10 +38,10 @@ function readRationalData(
   dataOffset: number,
   little: boolean,
   signed?: boolean,
-): number {
-  const left = readUnknownSignQuadBytes(view, dataOffset, little, signed)
-  const right = readUnknownSignQuadBytes(view, dataOffset + 4, little, signed)
-  return left / right
+): [number, number] {
+  const left = readQuadBytes(view, dataOffset, little, signed)
+  const right = readQuadBytes(view, dataOffset + 4, little, signed)
+  return [left, right]
 }
 
 export function readDataSet(
@@ -63,7 +53,11 @@ export function readDataSet(
   signed?: boolean,
 ): number | number[] {
   const reader =
-    byteUnit !== 4 ? readUnsignedBytes(byteUnit) : readUnknownSignQuadBytes
+    byteUnit === 4
+      ? readQuadBytes
+      : byteUnit === 1
+      ? readSingleByte
+      : readDoubleBytes
 
   if (length === 1) {
     return reader(view, dataOffset, little, signed)
@@ -83,7 +77,7 @@ export function readRationalDataSet(
   length: number,
   little: boolean,
   signed?: boolean,
-): number | number[] {
+): [number, number] | [number, number][] {
   if (length === 1) {
     return readRationalData(view, dataOffset, little, signed)
   }
